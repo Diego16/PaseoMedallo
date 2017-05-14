@@ -2,7 +2,7 @@
 using namespace std;
 struct Comando
 {
-    char comd;
+    char cmd;
     int pos;
 };
 struct Jugador
@@ -48,10 +48,10 @@ int main()
         case 2:
             cout<<"Ingrese el nombre del jugador a ubicar: ";
             cin>>buscar;
-            cout<<"El jugador se encuentra en la posicion "<<buscarJugador(nombres, N, buscar)<<endl;
+            cout<<"---El codigo del jugador es: "<<buscarJugador(jugadores, N, buscar)<<endl;
             break;
         case 3:
-            juego(nombres,comandos,mundo,pos,N,n);
+            juego(jugadores,N,n);
             break;
         case 4:
         default:
@@ -77,61 +77,60 @@ int menu()
     return opt;
 }
 
-void presentarJugadores(string nombres[], int N)
+void presentarJugadores(Jugador jugadores[], int N)
 {
-    string temp=" ";
-    string aux[N];
-    for(int i=0; i<N; i++)
-    {
-        aux[i]=nombres[i];
-    }
+    Jugador temp;
     for (int i = 0; i < N; i++)
     {
         for( int j=0 ; j < N - 1; j++)
-            if (aux[j] > aux[j+1])
+            if (jugadores[j].nombre > jugadores[j+1].nombre)
             {
-                temp = aux[j];
-                aux[j] = aux[j+1];
-                aux[j+1] = temp;
+                temp = jugadores[j];
+                jugadores[j] = jugadores[j+1];
+                jugadores[j+1] = temp;
             }
     }
     for(int i = 0; i < N; i++)
     {
-        cout<<"Jugador "<<aux[i]<<endl;
+        cout<<"Jugador "<<jugadores[i].nombre<<endl;
     }
 }
 
-int buscarJugador(string nombres[], int N, string buscar)
+int buscarJugador(Jugador jugadores[], int N, string buscar)
 {
     for (int i = 0; i < N; i++)
     {
-        if(buscar==nombres[i])
+        if(buscar==jugadores[i].nombre)
         {
-            return i;
+            return jugadores[i].codigo;
         }
     }
 }
 
-void juego(string nombres[], char cmd[],char mundo[],int pos[], int N, int n)
+void juego(Jugador jugadores[], int N, int n)
 {
     bool lapiz=false;
-    int ubi=0,salto=1,cont=1;
+    int ubix=0,ubiy=0,salto=1,cont=1, j=0;
+    char dir='v';
     for (int i=0; i<N; i++)
     {
         lapiz=false;
         salto=1;
         cont=1;
-        ubi=i*(n*n)- salto;
-        cout<<"Nombre jugador: "<<nombres[i]<<endl;
+        ubix=-salto;
+        ubiy=0;
+        cout<<"Nombre jugador: "<<jugadores[i].nombre<<endl;
         cout<<"Comandos: ";
-        for(int x=i*9; x<(i*9)+9; x++)
+        while(jugadores[i].comandos[j].cmd!='#')
         {
-            cout<<cmd[x]<<" ";
+            cout<<jugadores[i].comandos[j].cmd<<" ";
+            j++;
         }
         cout<<endl;
-        for (int j=i*9; j<(i*9)+9; j++)
+        j=0;
+        while(jugadores[i].comandos[j].cmd!='#')
         {
-            switch (cmd[j])
+            switch (jugadores[i].comandos[j].cmd)
             {
             case 'B':
                 lapiz=true;
@@ -142,27 +141,57 @@ void juego(string nombres[], char cmd[],char mundo[],int pos[], int N, int n)
             case 'D':
                 cont++;
                 if(cont%4==0)
-                    salto=-n;
-                if(cont%4==1)
-                    salto=1;
-                if(cont%4==2)
-                    salto=n;
-                if(cont%4==3)
+                {
                     salto=-1;
+                    dir='v';
+                }
+                if(cont%4==1)
+                {
+                    salto=1;
+                    dir='h';
+                }
+                if(cont%4==2)
+                {
+                    salto=1;
+                    dir='v';
+                }
+                if(cont%4==3)
+                {
+                    salto=-1;
+                    dir='h';
+                }
                 break;
             case 'N':
-                for(int f=0; f<pos[j]; f++)
+                switch(dir)
                 {
-                    ubi+=salto;
-                    if(lapiz)
+                case 'v':
+                    for(int f=0; f<jugadores[i].comandos[j].pos; f++)
                     {
-                        mundo[ubi]='*';
+                        ubiy+=salto;
+                        if(lapiz)
+                        {
+                            jugadores[i].comandos[j].mundo[ubix][ubiy]='*';
+                        }
                     }
+                    break;
+                case 'h':
+                    for(int f=0; f<jugadores[i].comandos[j].pos; f++)
+                    {
+                        ubix+=salto;
+                        if(lapiz)
+                        {
+                            jugadores[i].comandos[j].mundo[ubix][ubiy]='*';
+                        }
+                    }
+                    break;
                 }
                 break;
             case '#':
                 break;
             }
+            jugadores[i].curx=ubix;
+            jugadores[i].cury=ubiy;
+            j++;
         }
         for(int x=(i*n*n); x<(i*n*n)+(n*n); x++)
         {
