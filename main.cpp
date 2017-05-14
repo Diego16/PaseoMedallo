@@ -27,15 +27,7 @@ int main()
     char solucion[3][4];
     cout<<"Ingrese la cantidad de filas y columnas: ";
     cin>>n;
-    string nombres[N] = {"Katherine","Patricia","Liliana","Lizzeth","Marisol"};
     string buscar;
-    char comandos[N*9] = {'B','N','D','N','D','N','D','N','#','A','N','B','N','D','N','D','N','#','A','N','B','N','D','N','D','D','#','A','N','B','N','D','N','D','N','#','B','N','A','N','B','N','D','D','#'};
-    int pos[N*9] = {0,8,0,7,0,7,0,6,0,0,3,0,1,0,7,0,3,0,0,3,0,1,0,7,0,0,0,0,7,0,1,0,7,0,7,0,0,1,0,6,0,1,0,0,0};
-    char mundo[n*n*N];
-    for(int x=0; x<N*n*n; x++)
-    {
-        mundo[x]=' ';
-    }
     cout<<endl;
     do
     {
@@ -193,12 +185,47 @@ void juego(Jugador jugadores[], int N, int n)
             jugadores[i].cury=ubiy;
             j++;
         }
-        for(int x=(i*n*n); x<(i*n*n)+(n*n); x++)
+        for(int x=0; x<n; x++)
         {
-            if(x%n==0)
-                cout<<endl;
-            cout<<mundo[x];
+            for(int y=0; y<n; y++)
+            {
+                cout<<mundo[x][y];
+            }
+            cout<<endl;
         }
         cout<<endl;
+    }
+}
+void inicializar(Jugador jugadores[],char solucion,int N)
+{
+    string nombres[N] = {"Katherine","Patricia","Liliana","Lizzeth","Marisol"};
+    char comandos[N*9] = {'B','N','D','N','D','N','D','N','#','A','N','B','N','D','N','D','N','#','A','N','B','N','D','N','D','D','#','A','N','B','N','D','N','D','N','#','B','N','A','N','B','N','D','D','#'};
+    int pos[N*9] = {0,8,0,7,0,7,0,6,0,0,3,0,1,0,7,0,3,0,0,3,0,1,0,7,0,0,0,0,7,0,1,0,7,0,7,0,0,1,0,6,0,1,0,0,0};
+    for(int i=0; i<3; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            solucion[i][j]=' ';
+        }
+    }
+
+    for (int x = 0; x < N; x++)
+    {
+        jugadores[x].codigo=x+1;
+        jugadores[x].nombre=nombres[x];
+        jugadores[x].curx=0;
+        jugadores[x].cury=0;
+        for (int i = x+9; i < (x+9)+9; ++i)
+        {
+            jugadores[x].comandos[i].cmd=comandos[i];
+            jugadores[x].comandos[i].pos=pos[i];
+        }
+        for(int i=0; i<15; i++)
+        {
+            for (int j = 0; j < 15; j++)
+            {
+                jugadores[x].mundo[i][j]=' ';
+            }
+        }
     }
 }
