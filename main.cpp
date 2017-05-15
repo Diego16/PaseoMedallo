@@ -15,18 +15,20 @@ struct Jugador
     int cury;
 };
 int menu();
-void inicializar(Jugador jugadores[],char solucion,int N);
+void inicializar(Jugador jugadores[],char solucion[][3],int N);
 void presentarJugadores(Jugador jugadores[], int N);
 int buscarJugador(Jugador jugadores[], int N, string buscar);
 void juego(Jugador jugadores[], int N, int n);
-void validar(Jugador jugadores[], int N,int n,bool gano[]);
+void validar(Jugador jugadores[],char solucion[][3], int N,int n,bool gano[]);
+void ordenar(Jugador jugadores[], int N);
 
 int main()
 {
     int N=5, opt=0, n=0;
     Jugador jugadores[N];
-    char solucion[3][4];
-    bool gano[N]={true};
+    char solucion[3][3];
+    bool gano[N]= {true};
+    inicializar(jugadores,solucion,N);
     cout<<"Ingrese la cantidad de filas y columnas: ";
     cin>>n;
     string buscar;
@@ -48,7 +50,8 @@ int main()
             juego(jugadores,N,n);
             break;
         case 4:
-        	validar(jugadores,N,n,gano);
+            validar(jugadores,solucion,N,n,gano);
+            for()
             break;
         case 5:
         default:
@@ -76,17 +79,7 @@ int menu()
 
 void presentarJugadores(Jugador jugadores[], int N)
 {
-    Jugador temp;
-    for (int i = 0; i < N; i++)
-    {
-        for( int j=0 ; j < N - 1; j++)
-            if (jugadores[j].nombre > jugadores[j+1].nombre)
-            {
-                temp = jugadores[j];
-                jugadores[j] = jugadores[j+1];
-                jugadores[j+1] = temp;
-            }
-    }
+    ordenar(jugadores,N);
     for(int i = 0; i < N; i++)
     {
         cout<<"Jugador "<<jugadores[i].nombre<<endl;
@@ -102,22 +95,25 @@ int buscarJugador(Jugador jugadores[], int N, string buscar)
             return jugadores[i].codigo;
         }
     }
+    return 0;
 }
 
 void juego(Jugador jugadores[], int N, int n)
 {
     bool lapiz=false;
     int ubix=0,ubiy=0,salto=1,cont=1, j=0;
-    char dir='v';
+    char dir='h';
     for (int i=0; i<N; i++)
     {
         lapiz=false;
         salto=1;
         cont=1;
-        ubix=-salto;
+        ubix=0;
         ubiy=0;
+        dir='h';
         cout<<"Nombre jugador: "<<jugadores[i].nombre<<endl;
         cout<<"Comandos: ";
+        j=0;
         while(jugadores[i].comandos[j].cmd!='#')
         {
             cout<<jugadores[i].comandos[j].cmd<<" ";
@@ -161,7 +157,7 @@ void juego(Jugador jugadores[], int N, int n)
             case 'N':
                 switch(dir)
                 {
-                case 'v':
+                case 'h':
                     for(int f=0; f<jugadores[i].comandos[j].pos; f++)
                     {
                         ubiy+=salto;
@@ -171,7 +167,7 @@ void juego(Jugador jugadores[], int N, int n)
                         }
                     }
                     break;
-                case 'h':
+                case 'v':
                     for(int f=0; f<jugadores[i].comandos[j].pos; f++)
                     {
                         ubix+=salto;
@@ -194,14 +190,15 @@ void juego(Jugador jugadores[], int N, int n)
         {
             for(int y=0; y<n; y++)
             {
-                cout<<mundo[x][y];
+                cout<<jugadores[i].mundo[x][y];
             }
             cout<<endl;
         }
         cout<<endl;
     }
 }
-bool validar(Jugador jugadores, char solucion, int N, int n, bool gano[])
+
+void validar(Jugador jugadores[], char solucion[][3], int N, int n, bool gano[])
 {
     for (int x = 0; x < N; x++)
     {
@@ -211,42 +208,58 @@ bool validar(Jugador jugadores, char solucion, int N, int n, bool gano[])
             {
                 if(jugadores[x].mundo[i][j]!=solucion[i][j])
                 {
-                	i=3;
-                	j=i;
-                	gano[x]=false;
+                    i=3;
+                    j=i;
+                    gano[x]=false;
                 }
             }
         }
         if(gano[x])
         {
-        	for(int i=0;i<3;i++)
-        	{
-        		for (int j = 3; j < n; j++)
-        		{
-        			if(jugadores[x].mundo[i][j]!=' ')
-        			{
-        				i=3;
-        				j=i;
-        				gano[x]=false;
-        			}
-        		}
-        	}
-        	for (int i = 3; i < n; i++)
-        	{	
-	        	for (int j = 0; j < n; j++)
-	        		{
-	        			if(jugadores[x].mundo[i][j]!=' ')
-        			{
-        				i=n;
-        				j=i;
-        				gano[x]=false;
-        			}
-	        		}
-	        }
+            for(int i=0; i<3; i++)
+            {
+                for (int j = 3; j < n; j++)
+                {
+                    if(jugadores[x].mundo[i][j]!=' ')
+                    {
+                        i=3;
+                        j=i;
+                        gano[x]=false;
+                    }
+                }
+            }
+            for (int i = 3; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if(jugadores[x].mundo[i][j]!=' ')
+                    {
+                        i=n;
+                        j=i;
+                        gano[x]=false;
+                    }
+                }
+            }
         }
     }
 }
-void inicializar(Jugador jugadores[],char solucion,int N)
+
+void ordenar(Jugador jugadores[], int N)
+{
+    Jugador temp;
+    for (int i = 0; i < N; i++)
+    {
+        for( int j=0 ; j < N - 1; j++)
+            if (jugadores[j].nombre > jugadores[j+1].nombre)
+            {
+                temp = jugadores[j];
+                jugadores[j] = jugadores[j+1];
+                jugadores[j+1] = temp;
+            }
+    }
+}
+
+void inicializar(Jugador jugadores[],char solucion[][3],int N)
 {
     string nombres[N] = {"Katherine","Patricia","Liliana","Lizzeth","Marisol"};
     char comandos[N*9] = {'B','N','D','N','D','N','D','N','#','A','N','B','N','D','N','D','N','#','A','N','B','N','D','N','D','D','#','A','N','B','N','D','N','D','N','#','B','N','A','N','B','N','D','D','#'};
@@ -269,10 +282,10 @@ void inicializar(Jugador jugadores[],char solucion,int N)
         jugadores[x].nombre=nombres[x];
         jugadores[x].curx=0;
         jugadores[x].cury=0;
-        for (int i = x+9; i < (x+9)+9; ++i)
+        for (int i = x*9; i < (x*9)+9; i++)
         {
-            jugadores[x].comandos[i].cmd=comandos[i];
-            jugadores[x].comandos[i].pos=pos[i];
+            jugadores[x].comandos[i%9].cmd=comandos[i];
+            jugadores[x].comandos[i%9].pos=pos[i];
         }
         for(int i=0; i<15; i++)
         {
