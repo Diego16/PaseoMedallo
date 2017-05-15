@@ -19,12 +19,14 @@ void inicializar(Jugador jugadores[],char solucion,int N);
 void presentarJugadores(Jugador jugadores[], int N);
 int buscarJugador(Jugador jugadores[], int N, string buscar);
 void juego(Jugador jugadores[], int N, int n);
+void validar(Jugador jugadores[], int N,int n,bool gano[]);
 
 int main()
 {
     int N=5, opt=0, n=0;
     Jugador jugadores[N];
     char solucion[3][4];
+    bool gano[N]={true};
     cout<<"Ingrese la cantidad de filas y columnas: ";
     cin>>n;
     string buscar;
@@ -35,7 +37,7 @@ int main()
         switch (opt)
         {
         case 1:
-            presentarJugadores(nombres, N);
+            presentarJugadores(jugadores, N);
             break;
         case 2:
             cout<<"Ingrese el nombre del jugador a ubicar: ";
@@ -46,6 +48,9 @@ int main()
             juego(jugadores,N,n);
             break;
         case 4:
+        	validar(jugadores,N,n,gano);
+            break;
+        case 5:
         default:
             cout<<"Hasta luego..."<<endl;
             break;
@@ -162,7 +167,7 @@ void juego(Jugador jugadores[], int N, int n)
                         ubiy+=salto;
                         if(lapiz)
                         {
-                            jugadores[i].comandos[j].mundo[ubix][ubiy]='*';
+                            jugadores[i].mundo[ubix][ubiy]='*';
                         }
                     }
                     break;
@@ -172,7 +177,7 @@ void juego(Jugador jugadores[], int N, int n)
                         ubix+=salto;
                         if(lapiz)
                         {
-                            jugadores[i].comandos[j].mundo[ubix][ubiy]='*';
+                            jugadores[i].mundo[ubix][ubiy]='*';
                         }
                     }
                     break;
@@ -196,6 +201,51 @@ void juego(Jugador jugadores[], int N, int n)
         cout<<endl;
     }
 }
+bool validar(Jugador jugadores, char solucion, int N, int n, bool gano[])
+{
+    for (int x = 0; x < N; x++)
+    {
+        for(int i=0; i<3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if(jugadores[x].mundo[i][j]!=solucion[i][j])
+                {
+                	i=3;
+                	j=i;
+                	gano[x]=false;
+                }
+            }
+        }
+        if(gano[x])
+        {
+        	for(int i=0;i<3;i++)
+        	{
+        		for (int j = 3; j < n; j++)
+        		{
+        			if(jugadores[x].mundo[i][j]!=' ')
+        			{
+        				i=3;
+        				j=i;
+        				gano[x]=false;
+        			}
+        		}
+        	}
+        	for (int i = 3; i < n; i++)
+        	{	
+	        	for (int j = 0; j < n; j++)
+	        		{
+	        			if(jugadores[x].mundo[i][j]!=' ')
+        			{
+        				i=n;
+        				j=i;
+        				gano[x]=false;
+        			}
+	        		}
+	        }
+        }
+    }
+}
 void inicializar(Jugador jugadores[],char solucion,int N)
 {
     string nombres[N] = {"Katherine","Patricia","Liliana","Lizzeth","Marisol"};
@@ -203,12 +253,16 @@ void inicializar(Jugador jugadores[],char solucion,int N)
     int pos[N*9] = {0,8,0,7,0,7,0,6,0,0,3,0,1,0,7,0,3,0,0,3,0,1,0,7,0,0,0,0,7,0,1,0,7,0,7,0,0,1,0,6,0,1,0,0,0};
     for(int i=0; i<3; i++)
     {
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < 3; j++)
         {
             solucion[i][j]=' ';
         }
     }
-
+    solucion[0][0]='*';
+    solucion[0][1]='*';
+    solucion[0][2]='*';
+    solucion[1][2]='*';
+    solucion[3][2]='*';
     for (int x = 0; x < N; x++)
     {
         jugadores[x].codigo=x+1;
