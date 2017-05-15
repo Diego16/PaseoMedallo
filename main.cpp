@@ -51,7 +51,6 @@ int main()
             break;
         case 4:
             validar(jugadores,solucion,N,n,gano);
-            for()
             break;
         case 5:
         default:
@@ -241,6 +240,14 @@ void validar(Jugador jugadores[], char solucion[][3], int N, int n, bool gano[])
                 }
             }
         }
+    }
+    for(int i=0; i<N ; i++)
+    {
+        cout<<"El dibujo de "<<jugadores[i].nombre;
+        if(gano[i])
+            cout<<" corresponde al dado por el jurado"<<endl;
+        else
+            cout<<" no corresponde al dado por el jurado"<<endl;
     }
 }
 
